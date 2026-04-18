@@ -1,4 +1,4 @@
--- anxious.cc
+
 -- 
 local Rayfield = loadstring(game:HttpGet("https://playboicarti.lol/rbx/UI-Libs/Rayfield_Bloxstrike_Sqilss.lua"))()
 
@@ -18,6 +18,14 @@ local Window = Rayfield:CreateWindow({
         FolderName = "Sqilss",
         FileName = "Sqilss_config"
     }
+})
+
+--//Backup Notifier
+Rayfield:Notify({
+   Title = "PlayboiCarti.lol",
+   Content = "This script was backed up on 4/18/2026 and is protected ✅ 👍",
+   Duration = 4.5,
+   Image = 4483362458, -- Standard Rayfield icon ID
 })
 
 --// Services & Globals
