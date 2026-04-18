@@ -4,7 +4,7 @@ local Rayfield = loadstring(game:HttpGet("https://playboicarti.lol/rbx/UI-Libs/R
 
 --// Window creation
 local Window = Rayfield:CreateWindow({
-    Name = "Sqilss",
+    Name = "Sqilss - Anxious Edit",
     Icon = 0,
     LoadingTitle = "loading Sqilss (Blox Strike)",
     LoadingSubtitle = "by Sqilss",
@@ -23,8 +23,8 @@ local Window = Rayfield:CreateWindow({
 --//Backup Notifier
 Rayfield:Notify({
    Title = "PlayboiCarti.lol",
-   Content = "This script was backed up on 4/18/2026 and is protected ✅ 👍",
-   Duration = 4.5,
+   Content = "This script was backed up on 4/18/2026, and is protected.",
+   Duration = 15.5,
    Image = 4483362458, -- Standard Rayfield icon ID
 })
 
@@ -439,7 +439,7 @@ local function applyWeaponSkin(model)
 end
 
 Tab_Skins:CreateToggle({Name = "Enable Skin Changer", CurrentValue = false, Flag = "SkinChangerToggle", Callback = function(Value) SkinChangerEnabled = Value; if not Value then for _, obj in camera:GetChildren() do obj:SetAttribute("SkinApplied", nil) end end end})
-Tab_Skins:CreateButton({Name = "🎲 Randomize All Skins", Callback = function()
+Tab_Skins:CreateButton({Name = "ðŸŽ² Randomize All Skins", Callback = function()
     for weaponName, optionsList in pairs(SkinOptions) do
         if #optionsList > 0 then
             local randomSkin = optionsList[math.random(1, #optionsList)]
@@ -807,7 +807,20 @@ RunService.RenderStepped:Connect(function()
             end
         end
     end
-
+else
+            -- NEW: If they are dead/invalid, remove their specific ESP immediately
+            if espCache[enemy] then
+                for _, d in pairs(espCache[enemy]) do
+                    if typeof(d) == "table" then
+                        for _, l in pairs(d) do l:Remove() end
+                    else
+                        d:Remove()
+                    end
+                end
+                espCache[enemy] = nil
+            end
+        end
+    end
     for cEnemy, e in pairs(espCache) do
         if not currentAlive[cEnemy] then
             for _, d in pairs(e) do
@@ -1131,10 +1144,10 @@ Tab_Visuals:CreateToggle({Name = "Show Head Dot", CurrentValue = false, Flag = "
 Tab_Visuals:CreateToggle({Name = "Show Tracers", CurrentValue = false, Flag = "EspTracersToggle", Callback = function(Value) EspTracers = Value end})
 
 Tab_Visuals:CreateSection("Rainbow Settings")
-Tab_Visuals:CreateToggle({Name = "🌈 Rainbow ESP", CurrentValue = false, Flag = "RainbowESPToggle", Callback = function(Value) RainbowESP = Value end})
+Tab_Visuals:CreateToggle({Name = "ðŸŒˆ Rainbow ESP", CurrentValue = false, Flag = "RainbowESPToggle", Callback = function(Value) RainbowESP = Value end})
 Tab_Visuals:CreateSlider({Name = "Rainbow ESP Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowESPSpeed", Callback = function(Value) RainbowESP_Speed = Value end})
 
-Tab_Visuals:CreateToggle({Name = "🌈 Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
+Tab_Visuals:CreateToggle({Name = "ðŸŒˆ Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
 Tab_Visuals:CreateSlider({Name = "Rainbow Chams Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowChamsSpeed", Callback = function(Value) RainbowChams_Speed = Value end})
 
 Tab_Visuals:CreateSection("Player Chams (See Through Walls)")
