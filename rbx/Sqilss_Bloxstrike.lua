@@ -614,6 +614,7 @@ local function createESP()
 end
 
 RunService.RenderStepped:Connect(function()
+    -- 1. Global Killswitch
     if not EspEnabled or not isAlive() then
         for _, e in pairs(espCache) do
             for _, drawing in pairs(e) do
@@ -639,6 +640,7 @@ RunService.RenderStepped:Connect(function()
         local root = enemy:FindFirstChild("HumanoidRootPart")
         local head = enemy:FindFirstChild("Head")
 
+        -- Logic Check: Is the enemy alive and valid?
         if hum and hum.Health > 0 and root and head then
             currentAlive[enemy] = true
             if not espCache[enemy] then espCache[enemy] = createESP() end
@@ -650,13 +652,12 @@ RunService.RenderStepped:Connect(function()
 
             local distance = (camera.CFrame.Position - root.Position).Magnitude
 
+            -- Distance Check
             if EspMaxDistance > 0 and distance > EspMaxDistance then
                 for _, d in pairs(esp) do
                     if typeof(d) == "table" then
                         for _, l in pairs(d) do l.Visible = false end
-                    else
-                        d.Visible = false
-                    end
+                    else d.Visible = false end
                 end
                 continue
             end
@@ -673,11 +674,11 @@ RunService.RenderStepped:Connect(function()
                 local currentTracerColor = RainbowESP and rainbowColor or TracerColor
                 local currentHeadDotColor = RainbowESP and rainbowColor or HeadDotColor
 
+                -- BOX
                 if EspBox then
                     esp.boxOutline.Size = Vector2.new(boxWidth, boxHeight)
                     esp.boxOutline.Position = Vector2.new(boxX, boxY)
                     esp.boxOutline.Visible = true
-
                     esp.box.Size = Vector2.new(boxWidth, boxHeight)
                     esp.box.Position = Vector2.new(boxX, boxY)
                     esp.box.Color = currentBoxColor
@@ -688,6 +689,7 @@ RunService.RenderStepped:Connect(function()
                     esp.box.Visible = false
                 end
 
+                -- HEALTH
                 if EspHealth then
                     local hpPct = hum.Health / hum.MaxHealth
                     local barX = boxX - 7
@@ -697,11 +699,9 @@ RunService.RenderStepped:Connect(function()
                     esp.healthBackground.From = Vector2.new(barX, barTop)
                     esp.healthBackground.To = Vector2.new(barX, barBottom)
                     esp.healthBackground.Visible = true
-
                     esp.healthOutline.From = Vector2.new(barX - 1, barTop - 1)
                     esp.healthOutline.To = Vector2.new(barX + 1, barBottom + 1)
                     esp.healthOutline.Visible = true
-
                     esp.healthBar.From = Vector2.new(barX, barBottom)
                     esp.healthBar.To = Vector2.new(barX, barBottom - (boxHeight * hpPct))
                     esp.healthBar.Color = Color3.fromHSV(hpPct * 0.33, 1, 1)
@@ -712,15 +712,14 @@ RunService.RenderStepped:Connect(function()
                     esp.healthBar.Visible = false
                 end
 
+                -- NAME & DISTANCE
                 if EspName then
                     esp.name.Text = enemy.Name
                     esp.name.Position = Vector2.new(rootPos.X, headPos.Y - 22)
                     esp.name.Color = currentTextColor
                     esp.name.Size = EspTextSize
                     esp.name.Visible = true
-                else
-                    esp.name.Visible = false
-                end
+                else esp.name.Visible = false end
 
                 if EspDistance then
                     esp.distance.Text = string.format("[%d studs]", math.floor(distance))
@@ -728,27 +727,23 @@ RunService.RenderStepped:Connect(function()
                     esp.distance.Color = currentTextColor
                     esp.distance.Size = EspTextSize - 2
                     esp.distance.Visible = true
-                else
-                    esp.distance.Visible = false
-                end
+                else esp.distance.Visible = false end
 
+                -- HEAD DOT & TRACERS
                 if EspHeadDot then
                     esp.headDot.Position = Vector2.new(headPos.X, headPos.Y)
                     esp.headDot.Color = currentHeadDotColor
                     esp.headDot.Visible = true
-                else
-                    esp.headDot.Visible = false
-                end
+                else esp.headDot.Visible = false end
 
                 if EspTracers then
                     esp.tracer.From = screenCenter
                     esp.tracer.To = Vector2.new(rootPos.X, rootPos.Y + boxHeight / 2)
                     esp.tracer.Color = currentTracerColor
                     esp.tracer.Visible = true
-                else
-                    esp.tracer.Visible = false
-                end
+                else esp.tracer.Visible = false end
 
+                -- SKELETON
                 if EspSkeleton then
                     local neck = enemy:FindFirstChild("Neck") or head
                     local torso = enemy:FindFirstChild("UpperTorso") or enemy:FindFirstChild("Torso")
@@ -764,71 +759,59 @@ RunService.RenderStepped:Connect(function()
                         return Vector2.new(p.X, p.Y)
                     end
 
-                    local lines = esp.skeleton
-                    for _, line in pairs(lines) do
+                    for _, line in pairs(esp.skeleton) do
                         line.Color = currentSkeletonColor
                         line.Visible = true
                     end
 
+                    local lines = esp.skeleton
                     lines.headToNeck.From = Vector2.new(headPos.X, headPos.Y)
                     lines.headToNeck.To = w2s(neck.Position)
-
                     lines.neckToTorso.From = w2s(neck.Position)
                     lines.neckToTorso.To = w2s(torso and torso.Position or root.Position)
-
                     lines.torsoToLeftUpper.From = w2s(torso and torso.Position or root.Position)
                     lines.torsoToLeftUpper.To = w2s(leftUpper and leftUpper.Position or root.Position)
-
                     lines.torsoToRightUpper.From = w2s(torso and torso.Position or root.Position)
                     lines.torsoToRightUpper.To = w2s(rightUpper and rightUpper.Position or root.Position)
-
                     lines.leftUpperToLower.From = w2s(leftUpper and leftUpper.Position or root.Position)
                     lines.leftUpperToLower.To = w2s(leftLower and leftLower.Position or root.Position)
-
                     lines.rightUpperToLower.From = w2s(rightUpper and rightUpper.Position or root.Position)
                     lines.rightUpperToLower.To = w2s(rightLower and rightLower.Position or root.Position)
-
                     lines.leftLowerToFoot.From = w2s(leftLower and leftLower.Position or root.Position)
                     lines.leftLowerToFoot.To = w2s(leftFoot and leftFoot.Position or root.Position)
-
                     lines.rightLowerToFoot.From = w2s(rightLower and rightLower.Position or root.Position)
                     lines.rightLowerToFoot.To = w2s(rightFoot and rightFoot.Position or root.Position)
                 else
                     for _, line in pairs(esp.skeleton) do line.Visible = false end
                 end
             else
+                -- Offscreen
                 for _, d in pairs(esp) do
                     if typeof(d) == "table" then
                         for _, l in pairs(d) do l.Visible = false end
-                    else
-                        d.Visible = false
-                    end
+                    else d.Visible = false end
                 end
             end
-        end
-    end
-else
-            -- NEW: If they are dead/invalid, remove their specific ESP immediately
+        else
+            -- THIS IS YOUR ELSE: Handles specific cleanup for dead/invalid enemies
             if espCache[enemy] then
                 for _, d in pairs(espCache[enemy]) do
                     if typeof(d) == "table" then
                         for _, l in pairs(d) do l:Remove() end
-                    else
-                        d:Remove()
-                    end
+                    else d:Remove() end
                 end
                 espCache[enemy] = nil
             end
         end
     end
+
+    -- Global Cleanup (for players who left the game)
     for cEnemy, e in pairs(espCache) do
         if not currentAlive[cEnemy] then
             for _, d in pairs(e) do
                 if typeof(d) == "table" then
                     for _, l in pairs(d) do l:Remove() end
-                else
-                    d:Remove()
-                end
+                else d:Remove() end
             end
             espCache[cEnemy] = nil
         end
