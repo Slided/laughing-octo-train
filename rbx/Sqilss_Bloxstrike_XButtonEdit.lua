@@ -1,4 +1,4 @@
--- Aimbot is MB5 Instead of RC
+
 -- 
 local Rayfield = loadstring(game:HttpGet("https://playboicarti.lol/rbx/UI-Libs/Rayfield_Bloxstrike_Sqilss.lua"))()
 
