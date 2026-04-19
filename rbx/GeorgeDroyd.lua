@@ -18,19 +18,11 @@ local Window = Rayfield:CreateWindow({
         FolderName = "Sqilss",
         FileName = "Sqilss_config"
     }
-})
 
 --//Backup Notifier
 Rayfield:Notify({
-   Title = "PlayboiCarti.lol",
-   Content = "This script was backed up on 4/18/2026, and is protected.",
-   Duration = 15.5,
-   Image = 4483362458, -- Standard Rayfield icon ID
-})
-
-Rayfield:Notify({
-   Title = "PlayboiCarti.lol",
-   Content = "XTC",
+   Title = "Microsoft",
+   Content = "George Droyd, your powered up with fent. Now go kill the pregnant women!",
    Duration = 15.5,
    Image = 4483362458, -- Standard Rayfield icon ID
 })
@@ -51,6 +43,8 @@ local CharactersFolder = Workspace:WaitForChild("Characters", 10)
 local Tab_Combat = Window:CreateTab("Combat", "crosshair")
 local Tab_Skins = Window:CreateTab("Skins", "swords")
 local Tab_Visuals = Window:CreateTab("Visuals", "eye")
+
+Tab_Skins:CreateLabel("skin changerby twistedk1d (not made by me)", "code", Color3.fromRGB(80,80,80), false)
 
 --// SHARED LOGIC
 local function getTFolder() return CharactersFolder:FindFirstChild("Terrorists") end
@@ -73,7 +67,6 @@ local ShowFOV = false
 local FOV_Radius = 100
 local Smoothing = 3
 local AimKey = Enum.UserInputType.MouseButton2
-local Jitter = 2
 local isAiming = false
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Position = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
@@ -108,16 +101,11 @@ local function getClosestEnemyToMouse()
     return closestEnemy
 end
 
-UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.UserInputType == AimKey then 
-        isAiming = true 
-    end
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType == AimKey then isAiming = true end
 end)
-
 UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == AimKey then 
-        isAiming = false 
-    end
+    if input.UserInputType == AimKey then isAiming = false end
 end)
 
 RunService.RenderStepped:Connect(function()
@@ -128,35 +116,15 @@ RunService.RenderStepped:Connect(function()
     else
         FOVCircle.Visible = false
     end
-
     if not isAiming or not isAlive() or not AimbotEnabled then return end
    
     local targetHead = getClosestEnemyToMouse()
     if targetHead then
         local headPos = camera:WorldToViewportPoint(targetHead.Position)
         local mousePos = UserInputService:GetMouseLocation()
-        
-        -- 1. Correct Delta Calculation
-        -- We calculate how far the target is from the center of the screen
-        local deltaX = (headPos.X - mousePos.X)
-        local deltaY = (headPos.Y - mousePos.Y)
-        
-        -- 2. Refined Jitter 
-        -- Using math.random with decimals for micro-movements
-        local noiseX = (math.random() * 2 - 1) * Jitter
-        local noiseY = (math.random() * 2 - 1) * Jitter
-        
-        -- 3. The Movement Equation
-        -- We divide by Smoothing to slow the move down. 
-        -- If Smoothing is 1, it snaps. If it's 10, it's very slow.
-        local moveX = (deltaX + noiseX) / Smoothing
-        local moveY = (deltaY + noiseY) / Smoothing
-        
-        -- 4. Final Execution
-        if mousemoverel then 
-            -- We only move a fraction of the distance per frame
-            mousemoverel(moveX, moveY) 
-        end
+        local moveX = (headPos.X - mousePos.X) / Smoothing
+        local moveY = (headPos.Y - mousePos.Y) / Smoothing
+        if mousemoverel then mousemoverel(moveX, moveY) end
     end
 end)
 
@@ -470,7 +438,7 @@ local function applyWeaponSkin(model)
 end
 
 Tab_Skins:CreateToggle({Name = "Enable Skin Changer", CurrentValue = false, Flag = "SkinChangerToggle", Callback = function(Value) SkinChangerEnabled = Value; if not Value then for _, obj in camera:GetChildren() do obj:SetAttribute("SkinApplied", nil) end end end})
-Tab_Skins:CreateButton({Name = "Ã°Å¸Å½Â² Randomize All Skins", Callback = function()
+Tab_Skins:CreateButton({Name = "ðŸŽ² Randomize All Skins", Callback = function()
     for weaponName, optionsList in pairs(SkinOptions) do
         if #optionsList > 0 then
             local randomSkin = optionsList[math.random(1, #optionsList)]
@@ -1158,10 +1126,10 @@ Tab_Visuals:CreateToggle({Name = "Show Head Dot", CurrentValue = false, Flag = "
 Tab_Visuals:CreateToggle({Name = "Show Tracers", CurrentValue = false, Flag = "EspTracersToggle", Callback = function(Value) EspTracers = Value end})
 
 Tab_Visuals:CreateSection("Rainbow Settings")
-Tab_Visuals:CreateToggle({Name = "Ã°Å¸Å’Ë† Rainbow ESP", CurrentValue = false, Flag = "RainbowESPToggle", Callback = function(Value) RainbowESP = Value end})
+Tab_Visuals:CreateToggle({Name = "ðŸŒˆ Rainbow ESP", CurrentValue = false, Flag = "RainbowESPToggle", Callback = function(Value) RainbowESP = Value end})
 Tab_Visuals:CreateSlider({Name = "Rainbow ESP Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowESPSpeed", Callback = function(Value) RainbowESP_Speed = Value end})
 
-Tab_Visuals:CreateToggle({Name = "Ã°Å¸Å’Ë† Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
+Tab_Visuals:CreateToggle({Name = "ðŸŒˆ Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
 Tab_Visuals:CreateSlider({Name = "Rainbow Chams Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowChamsSpeed", Callback = function(Value) RainbowChams_Speed = Value end})
 
 Tab_Visuals:CreateSection("Player Chams (See Through Walls)")
