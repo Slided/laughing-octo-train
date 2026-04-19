@@ -72,7 +72,7 @@ local AimbotEnabled = false
 local ShowFOV = false
 local FOV_Radius = 100
 local Smoothing = 3
-local AimKey = Enum.KeyCode.X
+local AimKey = Enum.UserInputType.MouseButton2
 local Jitter = 2
 local isAiming = false
 local FOVCircle = Drawing.new("Circle")
@@ -109,13 +109,13 @@ local function getClosestEnemyToMouse()
 end
 
 UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.KeyCode == AimKey then 
+    if not processed and input.UserInputType == AimKey then 
         isAiming = true 
     end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-    if input.KeyCode == AimKey then 
+    if input.UserInputType == AimKey then 
         isAiming = false 
     end
 end)
