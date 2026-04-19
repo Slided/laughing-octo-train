@@ -136,20 +136,25 @@ RunService.RenderStepped:Connect(function()
         local headPos = camera:WorldToViewportPoint(targetHead.Position)
         local mousePos = UserInputService:GetMouseLocation()
         
-        -- THE HUMAN MATH EQUATION
-        -- 1. Calculate the distance (Delta)
-        local deltaX = headPos.X - mousePos.X
-        local deltaY = headPos.Y - mousePos.Y
+        -- 1. Correct Delta Calculation
+        -- We calculate how far the target is from the center of the screen
+        local deltaX = (headPos.X - mousePos.X)
+        local deltaY = (headPos.Y - mousePos.Y)
         
-        -- 2. Add 'Human' Jitter (Simulates micro-hand movements)
-        local noiseX = math.random(-Jitter, Jitter)
-        local noiseY = math.random(-Jitter, Jitter)
+        -- 2. Refined Jitter 
+        -- Using math.random with decimals for micro-movements
+        local noiseX = (math.random() * 2 - 1) * Jitter
+        local noiseY = (math.random() * 2 - 1) * Jitter
         
-        -- 3. Apply smoothing (Lower smoothing = more "snap", Higher = more "drag")
+        -- 3. The Movement Equation
+        -- We divide by Smoothing to slow the move down. 
+        -- If Smoothing is 1, it snaps. If it's 10, it's very slow.
         local moveX = (deltaX + noiseX) / Smoothing
         local moveY = (deltaY + noiseY) / Smoothing
         
+        -- 4. Final Execution
         if mousemoverel then 
+            -- We only move a fraction of the distance per frame
             mousemoverel(moveX, moveY) 
         end
     end
