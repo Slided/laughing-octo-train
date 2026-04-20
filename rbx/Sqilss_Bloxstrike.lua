@@ -7,9 +7,9 @@ local Window = Rayfield:CreateWindow({
     Name = "PlayboiCarti.lol",
     Icon = 0,
     LoadingTitle = "PlayboiCarti.lol - Sqilss Revamped",
-    LoadingSubtitle = "Bloxstrap - Updated 4/19/2026",
+    LoadingSubtitle = "Bloxstrap - Updated 4/20/2026",
     ShowText = "Menu",
-    Theme = "AmberGlow",
+    Theme = "Green",
     ToggleUIKeybind = Enum.KeyCode.RightShift,
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
@@ -139,8 +139,8 @@ end)
 Tab_Combat:CreateSection("Aimbot Settings")
 Tab_Combat:CreateToggle({Name = "Enable Aimbot (Hold Right Click)", CurrentValue = false, Flag = "AimbotToggle", Callback = function(Value) AimbotEnabled = Value end})
 Tab_Combat:CreateToggle({Name = "Show FOV Circle", CurrentValue = false, Flag = "FOVToggle", Callback = function(Value) ShowFOV = Value end})
-Tab_Combat:CreateSlider({Name = "FOV Radius", Range = {10, 500}, Increment = 10, Suffix = "px", CurrentValue = 100, Flag = "FOVSlider", Callback = function(Value) FOV_Radius = Value end})
-Tab_Combat:CreateSlider({Name = "Aimbot Smoothing", Range = {1, 10}, Increment = 0.5, Suffix = " (Lower is faster)", CurrentValue = 3, Flag = "AimbotSmoothing", Callback = function(Value) Smoothing = Value end})
+Tab_Combat:CreateSlider({Name = "FOV Radius", Range = {5, 500}, Increment = 0.25, Suffix = "px", CurrentValue = 100, Flag = "FOVSlider", Callback = function(Value) FOV_Radius = Value end})
+Tab_Combat:CreateSlider({Name = "Aimbot Smoothing", Range = {1, 10}, Increment = 0.05, Suffix = " (Lower is faster)", CurrentValue = 3, Flag = "AimbotSmoothing", Callback = function(Value) Smoothing = Value end})
 Tab_Combat:CreateSlider({Name = "Prediction Factor", Range = {0, 2.0}, Increment = 0.01, Suffix = " (Lead)", CurrentValue = 0.12, Flag = "PredictionFactor", Callback = function(Value) PredictionFactor = Value end})
 
 --// TriggerBot, Hitbox, Bhop (unchanged)
@@ -148,7 +148,7 @@ local TriggerBotEnabled = false
 local TriggerBotDelay = 0
 Tab_Combat:CreateSection("TriggerBot Settings")
 Tab_Combat:CreateToggle({Name = "Enable TriggerBot", CurrentValue = false, Flag = "TriggerBotToggle", Callback = function(Value) TriggerBotEnabled = Value end})
-Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 500}, Increment = 10, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
+Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 250}, Increment = 0.25, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
 
 task.spawn(function()
     while task.wait(0.01) do
@@ -185,7 +185,7 @@ local HitboxSize = 3
 local originalHeadSizes = {}
 Tab_Combat:CreateSection("Simple Hitbox (Max 3)")
 Tab_Combat:CreateToggle({Name = "Enable Hitbox", CurrentValue = false, Flag = "HitboxToggle", Callback = function(Value) HitboxEnabled = Value end})
-Tab_Combat:CreateSlider({Name = "Hitbox Size", Range = {1, 3}, Increment = 0.1, Suffix = " Studs", CurrentValue = 3, Flag = "HitboxSize", Callback = function(Value) HitboxSize = Value end})
+Tab_Combat:CreateSlider({Name = "Hitbox Size", Range = {1, 3}, Increment = 0.1, Suffix = " Studs", CurrentValue = 1, Flag = "HitboxSize", Callback = function(Value) HitboxSize = Value end})
 
 task.spawn(function()
     while task.wait(0.5) do
