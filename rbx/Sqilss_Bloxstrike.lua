@@ -24,7 +24,14 @@ local Window = Rayfield:CreateWindow({
 Rayfield:Notify({
    Title = "PlayboiCarti.lol",
    Content = "Esp is kinda unstable still, just use chams tbh",
-   Duration = 15.5,
+   Duration = 9.5,
+   Image = 4483362458, -- Standard Rayfield icon ID
+})
+
+Rayfield:Notify({
+   Title = "PlayboiCarti.lol",
+   Content = "Happy 4/20! Remember to vibe and stay safe out there :)",
+   Duration = 9.5,
    Image = 4483362458, -- Standard Rayfield icon ID
 })
 
