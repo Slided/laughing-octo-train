@@ -6,17 +6,17 @@ local Rayfield = loadstring(game:HttpGet("https://playboicarti.lol/rbx/UI-Libs/R
 local Window = Rayfield:CreateWindow({
     Name = "PlayboiCarti.lol",
     Icon = 0,
-    LoadingTitle = "PlayboiCarti.lol - Sqilss Revamped",
-    LoadingSubtitle = "Bloxstrap - Updated 4/20/2026",
+    LoadingTitle = "PlayboiCarti.lol",
+    LoadingSubtitle = "Bloxstrap - Updated 4/23/2026",
     ShowText = "Menu",
-    Theme = "Green",
+    Theme = "Amethyst",
     ToggleUIKeybind = Enum.KeyCode.RightShift,
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "Sqilss",
-        FileName = "Sqilss_config"
+        FolderName = "Carti",
+        FileName = "Carti_config"
     }
 })
 
@@ -24,13 +24,6 @@ local Window = Rayfield:CreateWindow({
 Rayfield:Notify({
    Title = "PlayboiCarti.lol",
    Content = "Esp is kinda unstable still, just use chams tbh",
-   Duration = 9.5,
-   Image = 4483362458, -- Standard Rayfield icon ID
-})
-
-Rayfield:Notify({
-   Title = "PlayboiCarti.lol",
-   Content = "Happy 4/20! Remember to vibe and stay safe out there :)",
    Duration = 9.5,
    Image = 4483362458, -- Standard Rayfield icon ID
 })
@@ -146,9 +139,9 @@ end)
 Tab_Combat:CreateSection("Aimbot Settings")
 Tab_Combat:CreateToggle({Name = "Enable Aimbot (Hold Right Click)", CurrentValue = false, Flag = "AimbotToggle", Callback = function(Value) AimbotEnabled = Value end})
 Tab_Combat:CreateToggle({Name = "Show FOV Circle", CurrentValue = false, Flag = "FOVToggle", Callback = function(Value) ShowFOV = Value end})
-Tab_Combat:CreateSlider({Name = "FOV Radius", Range = {5, 500}, Increment = 0.25, Suffix = "px", CurrentValue = 100, Flag = "FOVSlider", Callback = function(Value) FOV_Radius = Value end})
-Tab_Combat:CreateSlider({Name = "Aimbot Smoothing", Range = {1, 10}, Increment = 0.05, Suffix = " (Lower is faster)", CurrentValue = 3, Flag = "AimbotSmoothing", Callback = function(Value) Smoothing = Value end})
-Tab_Combat:CreateSlider({Name = "Prediction Factor", Range = {0, 2.0}, Increment = 0.01, Suffix = " (Lead)", CurrentValue = 0.12, Flag = "PredictionFactor", Callback = function(Value) PredictionFactor = Value end})
+Tab_Combat:CreateSlider({Name = "FOV Radius", Range = {1, 500}, Increment = 0.25, Suffix = "px", CurrentValue = 100, Flag = "FOVSlider", Callback = function(Value) FOV_Radius = Value end})
+Tab_Combat:CreateSlider({Name = "Aimbot Smoothing", Range = {1, 25}, Increment = 0.01, Suffix = " (Lower is faster)", CurrentValue = 3, Flag = "AimbotSmoothing", Callback = function(Value) Smoothing = Value end})
+Tab_Combat:CreateSlider({Name = "Prediction Factor", Range = {0, 2.0}, Increment = 0.005, Suffix = " (Lead)", CurrentValue = 0.12, Flag = "PredictionFactor", Callback = function(Value) PredictionFactor = Value end})
 
 --// TriggerBot, Hitbox, Bhop (unchanged)
 local TriggerBotEnabled = false
@@ -454,7 +447,7 @@ local function applyWeaponSkin(model)
 end
 
 Tab_Skins:CreateToggle({Name = "Enable Skin Changer", CurrentValue = false, Flag = "SkinChangerToggle", Callback = function(Value) SkinChangerEnabled = Value; if not Value then for _, obj in camera:GetChildren() do obj:SetAttribute("SkinApplied", nil) end end end})
-Tab_Skins:CreateButton({Name = "Ã°Å¸Å½Â² Randomize All Skins", Callback = function()
+Tab_Skins:CreateButton({Name = "Randomize All Skins", Callback = function()
     for weaponName, optionsList in pairs(SkinOptions) do
         if #optionsList > 0 then
             local randomSkin = optionsList[math.random(1, #optionsList)]
@@ -525,10 +518,10 @@ end)
 
 --// ESP + CHAMS (unchanged)
 local EspEnabled = false
-local EspBox = true
-local EspName = true
-local EspHealth = true
-local EspDistance = true
+local EspBox = false
+local EspName = false
+local EspHealth = false
+local EspDistance = false
 local EspSkeleton = false
 local EspHeadDot = false
 local EspTracers = false
@@ -547,10 +540,10 @@ local HeadDotColor = Color3.fromRGB(255, 255, 255)
 local EspTextSize = 15
 local BoxThickness = 1.5
 
-local ChamsEnabled = false
+local ChamsEnabled = true
 local ChamsColor = Color3.fromRGB(255, 0, 255)
-local ChamsFillTransparency = 0.7
-local ChamsOutlineTransparency = 0
+local ChamsFillTransparency = 0.85
+local ChamsOutlineTransparency = 0.65
 
 local WeaponChamsEnabled = false
 local WeaponChamsColor = Color3.fromRGB(0, 255, 255)
@@ -1132,20 +1125,8 @@ end)
 Tab_Visuals:CreateSection("ESP Master Switch")
 Tab_Visuals:CreateToggle({Name = "Enable Player ESP", CurrentValue = false, Flag = "ESPToggle", Callback = function(Value) EspEnabled = Value end})
 
-Tab_Visuals:CreateSection("ESP Visual Settings")
-Tab_Visuals:CreateToggle({Name = "Show Box", CurrentValue = true, Flag = "EspBoxToggle", Callback = function(Value) EspBox = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Health Bar", CurrentValue = true, Flag = "EspHealthToggle", Callback = function(Value) EspHealth = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Name", CurrentValue = true, Flag = "EspNameToggle", Callback = function(Value) EspName = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Distance", CurrentValue = true, Flag = "EspDistanceToggle", Callback = function(Value) EspDistance = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Skeleton", CurrentValue = false, Flag = "EspSkeletonToggle", Callback = function(Value) EspSkeleton = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Head Dot", CurrentValue = false, Flag = "EspHeadDotToggle", Callback = function(Value) EspHeadDot = Value end})
-Tab_Visuals:CreateToggle({Name = "Show Tracers", CurrentValue = false, Flag = "EspTracersToggle", Callback = function(Value) EspTracers = Value end})
-
 Tab_Visuals:CreateSection("Rainbow Settings")
-Tab_Visuals:CreateToggle({Name = "Ã°Å¸Å’Ë† Rainbow ESP", CurrentValue = false, Flag = "RainbowESPToggle", Callback = function(Value) RainbowESP = Value end})
-Tab_Visuals:CreateSlider({Name = "Rainbow ESP Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowESPSpeed", Callback = function(Value) RainbowESP_Speed = Value end})
-
-Tab_Visuals:CreateToggle({Name = "Ã°Å¸Å’Ë† Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
+Tab_Visuals:CreateToggle({Name = "Rainbow Chams", CurrentValue = false, Flag = "RainbowChamsToggle", Callback = function(Value) RainbowChams = Value end})
 Tab_Visuals:CreateSlider({Name = "Rainbow Chams Speed", Range = {0.1, 10}, Increment = 0.1, Suffix = "", CurrentValue = 2.0, Flag = "RainbowChamsSpeed", Callback = function(Value) RainbowChams_Speed = Value end})
 
 Tab_Visuals:CreateSection("Player Chams (See Through Walls)")
@@ -1182,16 +1163,6 @@ Tab_Visuals:CreateColorPicker({Name = "Kill Effect Color", Color = Color3.fromRG
 Tab_Visuals:CreateSlider({Name = "Kill Effect Duration", Range = {0.3, 2}, Increment = 0.1, Suffix = " sec", CurrentValue = 0.8, Flag = "KillEffectDuration", Callback = function(Value) KillEffectDuration = Value end})
 Tab_Visuals:CreateSlider({Name = "Kill Effect Intensity", Range = {0.2, 1}, Increment = 0.1, Suffix = "", CurrentValue = 0.6, Flag = "KillEffectIntensity", Callback = function(Value) KillEffectIntensity = Value end})
 
-Tab_Visuals:CreateSection("ESP Customization (when Rainbow is off)")
-Tab_Visuals:CreateColorPicker({Name = "Box Color", Color = Color3.fromRGB(255, 50, 50), Flag = "BoxColorPicker", Callback = function(Value) BoxColor = Value end})
-Tab_Visuals:CreateColorPicker({Name = "Text Color (Name/Distance)", Color = Color3.fromRGB(255, 255, 255), Flag = "TextColorPicker", Callback = function(Value) TextColor = Value end})
-Tab_Visuals:CreateColorPicker({Name = "Skeleton Color", Color = Color3.fromRGB(255, 255, 255), Flag = "SkeletonColorPicker", Callback = function(Value) SkeletonColor = Value end})
-Tab_Visuals:CreateColorPicker({Name = "Tracer Color", Color = Color3.fromRGB(255, 50, 50), Flag = "TracerColorPicker", Callback = function(Value) TracerColor = Value end})
-Tab_Visuals:CreateColorPicker({Name = "Head Dot Color", Color = Color3.fromRGB(255, 255, 255), Flag = "HeadDotColorPicker", Callback = function(Value) HeadDotColor = Value end})
-
-Tab_Visuals:CreateSlider({Name = "Text Size", Range = {10, 20}, Increment = 1, Suffix = "", CurrentValue = 15, Flag = "EspTextSize", Callback = function(Value) EspTextSize = Value end})
-Tab_Visuals:CreateSlider({Name = "Box Thickness", Range = {1, 3}, Increment = 0.1, Suffix = "", CurrentValue = 1.5, Flag = "BoxThickness", Callback = function(Value) BoxThickness = Value end})
-Tab_Visuals:CreateSlider({Name = "Max ESP Distance", Range = {0, 500}, Increment = 10, Suffix = " studs (0 = unlimited)", CurrentValue = 0, Flag = "EspDistanceLimit", Callback = function(Value) EspMaxDistance = Value end})
 
 --// Configs
 Tab_Visuals:CreateSection("Configs")
