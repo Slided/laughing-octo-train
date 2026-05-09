@@ -53,14 +53,20 @@ local function isAlive()
     return (t and t:FindFirstChild(player.Name)) or (ct and ct:FindFirstChild(player.Name))
 end
 local function getEnemyFolder()
-    if not TeamCheckEnabled then
-        return CharactersFolder  -- targets everyone, not just enemies
-    end
     if not isAlive() then return nil end
     local t, ct = getTFolder(), getCTFolder()
     if t and t:FindFirstChild(player.Name) then return ct end
     if ct and ct:FindFirstChild(player.Name) then return t end
     return nil
+end
+
+local function getAllPlayers()
+    local players = {}
+    local t = getTFolder()
+    local ct = getCTFolder()
+    if t then for _, player in ipairs(t:GetChildren()) do table.insert(players, player) end end
+    if ct then for _, player in ipairs(ct:GetChildren()) do table.insert(players, player) end end
+    return players
 end
 
 --// AIMBOT (unchanged)
@@ -83,12 +89,12 @@ FOVCircle.Thickness = 1
 local function getClosestEnemyToMouse()
     local closestEnemy = nil
     local shortestDistance = FOV_Radius
-    local enemyFolder = getEnemyFolder()
-    if not enemyFolder or not AimbotEnabled then return nil end
+    if not AimbotEnabled then return nil end
    
+    local enemies = TeamCheckEnabled and (getEnemyFolder() and getEnemyFolder():GetChildren() or {}) or getAllPlayers()
     local mousePos = UserInputService:GetMouseLocation()
    
-    for _, enemy in ipairs(enemyFolder:GetChildren()) do
+    for _, enemy in ipairs(enemies) do
         local hum = enemy:FindFirstChildOfClass("Humanoid")
         local head = enemy:FindFirstChild("Head")
         local root = enemy:FindFirstChild("HumanoidRootPart") or enemy:FindFirstChild("UpperTorso")
@@ -170,8 +176,14 @@ task.spawn(function()
                 local hitPart = result.Instance
                 local model = hitPart:FindFirstAncestorOfClass("Model")
                 if model and model:FindFirstChildOfClass("Humanoid") then
-                    local enemyFolder = getEnemyFolder()
-                    if enemyFolder and model.Parent == enemyFolder then
+                    local isValidTarget = false
+                    if TeamCheckEnabled then
+                        local enemyFolder = getEnemyFolder()
+                        isValidTarget = enemyFolder and model.Parent == enemyFolder
+                    else
+                        isValidTarget = model.Parent ~= player.Character and (model.Parent.Parent == CharactersFolder)
+                    end
+                    if isValidTarget then
                         local hum = model:FindFirstChildOfClass("Humanoid")
                         if hum and hum.Health > 0 then
                             if TriggerBotDelay > 0 then task.wait(TriggerBotDelay / 1000) end
@@ -194,9 +206,9 @@ Tab_Combat:CreateSlider({Name = "Hitbox Size", Range = {1, 3}, Increment = 0.1, 
 
 task.spawn(function()
     while task.wait(0.5) do
-        local enemyFolder = getEnemyFolder()
-        if enemyFolder then
-            for _, enemy in ipairs(enemyFolder:GetChildren()) do
+        local enemies = TeamCheckEnabled and (getEnemyFolder() and getEnemyFolder():GetChildren() or {}) or getAllPlayers()
+        if enemies then
+            for _, enemy in ipairs(enemies) do
                 local head = enemy:FindFirstChild("Head")
                 local hum = enemy:FindFirstChildOfClass("Humanoid")
                 if head and hum and hum.Health > 0 then
@@ -641,14 +653,14 @@ RunService.RenderStepped:Connect(function()
         return
     end
 
-    local enemyFolder = getEnemyFolder()
-    if not enemyFolder then return end
+    local enemies = TeamCheckEnabled and (getEnemyFolder() and getEnemyFolder():GetChildren() or {}) or getAllPlayers()
+    if not enemies or #enemies == 0 then return end
 
     local currentAlive = {}
     local screenCenter = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y)
     local rainbowColor = RainbowESP and getRainbowColor(RainbowESP_Speed) or nil
 
-    for _, enemy in ipairs(enemyFolder:GetChildren()) do
+    for _, enemy in ipairs(enemies) do
         local hum = enemy:FindFirstChildOfClass("Humanoid")
         local root = enemy:FindFirstChild("HumanoidRootPart")
         local head = enemy:FindFirstChild("Head")
@@ -832,11 +844,11 @@ RunService.RenderStepped:Connect(function()
 end)
 
 local function updatePlayerChams()
-    local enemyFolder = getEnemyFolder()
-    if not enemyFolder then return end
+    local enemies = TeamCheckEnabled and (getEnemyFolder() and getEnemyFolder():GetChildren() or {}) or getAllPlayers()
+    if not enemies or #enemies == 0 then return end
     local rainbowColor = RainbowChams and getRainbowColor(RainbowChams_Speed) or ChamsColor
 
-    for _, enemy in ipairs(enemyFolder:GetChildren()) do
+    for _, enemy in ipairs(enemies) do
         local hum = enemy:FindFirstChildOfClass("Humanoid")
         if hum and hum.Health > 0 then
             if not chamsCache[enemy] then
@@ -1110,10 +1122,10 @@ task.spawn(function()
     local lastHealth = {}
     while task.wait(0.1) do
         if not KillEffectsEnabled then continue end
-        local enemyFolder = getEnemyFolder()
-        if not enemyFolder then continue end
+        local enemies = TeamCheckEnabled and (getEnemyFolder() and getEnemyFolder():GetChildren() or {}) or getAllPlayers()
+        if not enemies or #enemies == 0 then continue end
 
-        for _, enemy in ipairs(enemyFolder:GetChildren()) do
+        for _, enemy in ipairs(enemies) do
             local hum = enemy:FindFirstChildOfClass("Humanoid")
             if hum then
                 local currentHealth = hum.Health
