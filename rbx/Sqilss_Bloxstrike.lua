@@ -159,7 +159,7 @@ local TriggerBotEnabled = false
 local TriggerBotDelay = 0
 Tab_Combat:CreateSection("TriggerBot Settings")
 Tab_Combat:CreateToggle({Name = "Enable TriggerBot", CurrentValue = false, Flag = "TriggerBotToggle", Callback = function(Value) TriggerBotEnabled = Value end})
-Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 15}, Increment = 0.01, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
+Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 5}, Increment = 0.005, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
 
 task.spawn(function()
     while task.wait(0.01) do
