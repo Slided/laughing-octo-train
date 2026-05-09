@@ -53,6 +53,9 @@ local function isAlive()
     return (t and t:FindFirstChild(player.Name)) or (ct and ct:FindFirstChild(player.Name))
 end
 local function getEnemyFolder()
+    if not TeamCheckEnabled then
+        return CharactersFolder  -- targets everyone, not just enemies
+    end
     if not isAlive() then return nil end
     local t, ct = getTFolder(), getCTFolder()
     if t and t:FindFirstChild(player.Name) then return ct end
@@ -62,6 +65,7 @@ end
 
 --// AIMBOT (unchanged)
 local AimbotEnabled = false
+local TeamCheckEnabled = true  -- Toggle to disable team-based checks
 local ShowFOV = false
 local FOV_Radius = 100
 local Smoothing = 3
@@ -142,6 +146,7 @@ Tab_Combat:CreateToggle({Name = "Show FOV Circle", CurrentValue = false, Flag = 
 Tab_Combat:CreateSlider({Name = "FOV Radius", Range = {1, 500}, Increment = 0.25, Suffix = "px", CurrentValue = 100, Flag = "FOVSlider", Callback = function(Value) FOV_Radius = Value end})
 Tab_Combat:CreateSlider({Name = "Aimbot Smoothing", Range = {1, 25}, Increment = 0.01, Suffix = " (Lower is faster)", CurrentValue = 3, Flag = "AimbotSmoothing", Callback = function(Value) Smoothing = Value end})
 Tab_Combat:CreateSlider({Name = "Prediction Factor", Range = {0, 2.0}, Increment = 0.005, Suffix = " (Lead)", CurrentValue = 0.12, Flag = "PredictionFactor", Callback = function(Value) PredictionFactor = Value end})
+Tab_Combat:CreateToggle({Name = "Team Check", CurrentValue = true, Flag = "TeamCheck", Callback = function(Value) TeamCheckEnabled = Value end})
 
 --// TriggerBot, Hitbox, Bhop (unchanged)
 local TriggerBotEnabled = false
