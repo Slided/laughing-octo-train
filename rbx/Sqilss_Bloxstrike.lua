@@ -7,9 +7,9 @@ local Window = Rayfield:CreateWindow({
     Name = "PlayboiCarti.lol",
     Icon = 0,
     LoadingTitle = "PlayboiCarti.lol",
-    LoadingSubtitle = "Bloxstrap - Updated 4/23/2026",
+    LoadingSubtitle = "Bloxstrap - Updated 5/8/2026",
     ShowText = "Menu",
-    Theme = "Amethyst",
+    Theme = "Serenity",
     ToggleUIKeybind = Enum.KeyCode.RightShift,
     DisableRayfieldPrompts = false,
     DisableBuildWarnings = false,
@@ -23,7 +23,7 @@ local Window = Rayfield:CreateWindow({
 --//Backup Notifier
 Rayfield:Notify({
    Title = "PlayboiCarti.lol",
-   Content = "Esp is kinda unstable still, just use chams tbh",
+   Content = "areyouanixous?",
    Duration = 9.5,
    Image = 4483362458, -- Standard Rayfield icon ID
 })
@@ -148,7 +148,7 @@ local TriggerBotEnabled = false
 local TriggerBotDelay = 0
 Tab_Combat:CreateSection("TriggerBot Settings")
 Tab_Combat:CreateToggle({Name = "Enable TriggerBot", CurrentValue = false, Flag = "TriggerBotToggle", Callback = function(Value) TriggerBotEnabled = Value end})
-Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 250}, Increment = 0.25, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
+Tab_Combat:CreateSlider({Name = "Shot Delay", Range = {0, 15}, Increment = 0.01, Suffix = "ms", CurrentValue = 0, Flag = "TriggerBotDelay", Callback = function(Value) TriggerBotDelay = Value end})
 
 task.spawn(function()
     while task.wait(0.01) do
