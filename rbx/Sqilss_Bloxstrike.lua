@@ -230,15 +230,22 @@ task.spawn(function()
 end)
 
 local BhopEnabled = false
+local BhopDelayMs = 0
+local lastBhopTime = 0
 Tab_Combat:CreateSection("Movement Settings")
 Tab_Combat:CreateToggle({Name = "Enable Bunny Hop (Hold Space)", CurrentValue = false, Flag = "BhopToggle", Callback = function(Value) BhopEnabled = Value end})
+Tab_Combat:CreateSlider({Name = "Bunny Hop Delay", Range = {0, 1}, Increment = 0.001, Suffix = "ms", CurrentValue = 0, Flag = "BhopDelaySlider", Callback = function(Value) BhopDelayMs = Value end})
 
 RunService.RenderStepped:Connect(function()
     if BhopEnabled and UserInputService:IsKeyDown(Enum.KeyCode.Space) and isAlive() then
-        if player.Character then
-            local hum = player.Character:FindFirstChildOfClass("Humanoid")
-            if hum and hum:GetState() ~= Enum.HumanoidStateType.Jumping and hum:GetState() ~= Enum.HumanoidStateType.Freefall then
-                hum.Jump = true
+        local now = tick()
+        if now - lastBhopTime >= (BhopDelayMs / 1000) then
+            if player.Character then
+                local hum = player.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum:GetState() ~= Enum.HumanoidStateType.Jumping and hum:GetState() ~= Enum.HumanoidStateType.Freefall then
+                    hum.Jump = true
+                    lastBhopTime = now
+                end
             end
         end
     end
