@@ -195,6 +195,25 @@ do
         local selection = menu:WaitForChild("Lookup"):WaitForChild("Selection")
         local playerNameLabel = selection:WaitForChild("PlayerName")
         
+        local usernameCache = {}
+        
+        local function getUsernameFromId(userId)
+            if userId == 0 or userId == nil then
+                return "System"
+            end
+            if usernameCache[userId] then
+                return usernameCache[userId]
+            end
+            local success, name = pcall(function()
+                return Players:GetNameFromUserIdAsync(userId)
+            end)
+            if success and name then
+                usernameCache[userId] = name
+                return name
+            end
+            return "Unknown"
+        end
+        
         local function serialize(val, indent, visited)
             indent = indent or 0
             visited = visited or {}
@@ -213,14 +232,36 @@ do
                     if type(k) == "string" then
                         keyStr = string.format("%q", k)
                     end
-                    local success, res = pcall(function()
-                        return serialize(v, indent + 1, visited)
-                    end)
-                    if success then
-                        result = result .. formatting .. "  [" .. keyStr .. "] = " .. res .. ",\n"
+                    
+                    local keyLower = tostring(k):lower()
+                    local formattedVal = v
+                    
+                    if (keyLower == "fromuserid" or keyLower == "touserid" or keyLower == "originalowneruserid" or keyLower == "currentowneruserid") and type(v) == "number" then
+                        local uName = getUsernameFromId(v)
+                        local success, res = pcall(function()
+                            return serialize(v, indent + 1, visited)
+                        end)
+                        local baseValStr = success and res or tostring(v)
+                        formattedVal = baseValStr .. " -- @" .. uName
+                    elseif keyLower == "pulledat" and type(v) == "number" then
+                        local dateStr = os.date("%m-%d-%Y", v)
+                        local success, res = pcall(function()
+                            return serialize(v, indent + 1, visited)
+                        end)
+                        local baseValStr = success and res or tostring(v)
+                        formattedVal = baseValStr .. " -- " .. dateStr
                     else
-                        result = result .. formatting .. "  [" .. keyStr .. "] = \"{Serialization Error}\",\n"
+                        local success, res = pcall(function()
+                            return serialize(v, indent + 1, visited)
+                        end)
+                        if success then
+                            formattedVal = res
+                        else
+                            formattedVal = "\"{Serialization Error}\""
+                        end
                     end
+                    
+                    result = result .. formatting .. "  [" .. keyStr .. "] = " .. formattedVal .. ",\n"
                 end
                 result = result .. formatting .. "}"
                 return result
@@ -231,6 +272,97 @@ do
             else
                 return string.format("%q", tostring(val))
             end
+        end
+        
+        local function scanTradedItems(data)
+            local baseUserId = nil
+            local baseUsername = nil
+            
+            if type(data) == "table" then
+                baseUserId = data["userId"]
+                baseUsername = data["username"]
+            end
+            
+            if not baseUserId and LocalPlayer then
+                baseUserId = LocalPlayer.UserId
+            end
+            if not baseUsername and LocalPlayer then
+                baseUsername = LocalPlayer.Name
+            end
+            
+            local tradedItemsList = {}
+            
+            local function recursiveSearch(tbl)
+                if type(tbl) ~= "table" then return end
+                
+                local isItemTable = false
+                local hasOwnerInfo = false
+                
+                for k, v in pairs(tbl) do
+                    local lk = tostring(k):lower()
+                    if lk == "itemid" or lk == "uid" or lk == "skinname" or lk == "displayname" then
+                        isItemTable = true
+                    end
+                    if lk == "originalowneruserid" or lk == "currentowneruserid" or lk == "fromuserid" or lk == "touserid" or lk == "originalownername" or lk == "currentownername" then
+                        hasOwnerInfo = true
+                    end
+                end
+                
+                if isItemTable and hasOwnerInfo then
+                    local origUid = tbl["originalOwnerUserId"]
+                    local currUid = tbl["currentOwnerUserId"]
+                    local origName = tbl["originalOwnerName"]
+                    local currName = tbl["currentOwnerName"]
+                    
+                    local fromUid = tbl["fromUserId"]
+                    local toUid = tbl["toUserId"]
+                    
+                    local specialHistory = tbl["specialHistory"]
+                    if type(specialHistory) == "table" then
+                        for _, hEntry in pairs(specialHistory) do
+                            if type(hEntry) == "table" then
+                                if hEntry["fromUserId"] and hEntry["fromUserId"] ~= 0 then
+                                    if (baseUserId and hEntry["fromUserId"] ~= baseUserId) or (baseUsername and hEntry["fromName"] and hEntry["fromName"] ~= "" and hEntry["fromName"] ~= baseUsername) then
+                                        isItemTable = true
+                                    end
+                                end
+                                if hEntry["toUserId"] and hEntry["toUserId"] ~= 0 then
+                                    if (baseUserId and hEntry["toUserId"] ~= baseUserId) or (baseUsername and hEntry["toName"] and hEntry["toName"] ~= "" and hEntry["toName"] ~= baseUsername) then
+                                        isItemTable = true
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    
+                    local isDifferent = false
+                    
+                    if baseUserId then
+                        if origUid and origUid ~= 0 and origUid ~= baseUserId then isDifferent = true end
+                        if currUid and currUid ~= 0 and currUid ~= baseUserId then isDifferent = true end
+                        if fromUid and fromUid ~= 0 and fromUid ~= baseUserId then isDifferent = true end
+                        if toUid and toUid ~= 0 and toUid ~= baseUserId then isDifferent = true end
+                    end
+                    
+                    if baseUsername then
+                        if origName and origName ~= "" and origName ~= baseUsername then isDifferent = true end
+                        if currName and currName ~= "" and currName ~= baseUsername then isDifferent = true end
+                    end
+                    
+                    if isDifferent then
+                        table.insert(tradedItemsList, tbl)
+                    end
+                end
+                
+                for _, v in pairs(tbl) do
+                    if type(v) == "table" then
+                        recursiveSearch(v)
+                    end
+                end
+            end
+            
+            recursiveSearch(data)
+            return tradedItemsList
         end
         
         return function()
@@ -345,10 +477,21 @@ do
         
             local outputText = ""
             if success then
+                local profileSerialized = ""
                 local sSuccess, serialized = pcall(function()
                     return serialize(result)
                 end)
-                outputText = sSuccess and serialized or tostring(result)
+                profileSerialized = sSuccess and serialized or tostring(result)
+                
+                local tradedItems = scanTradedItems(result)
+                local tradedSerialized = ""
+                local sTraded, tSer = pcall(function()
+                    return serialize(tradedItems)
+                end)
+                tradedSerialized = sTraded and tSer or "{\n}"
+                
+                outputText = "--- PROFILE DATA ---\n" .. profileSerialized .. "\n\n--- TRADED / NON-ORIGINAL ITEMS SECTION ---\n" .. tradedSerialized
+                
                 print("--- GetPlayerProfile Result ---")
                 print(outputText)
             else
@@ -379,41 +522,39 @@ local function NIMERU_fake_script()
     end
 
     local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
     local TopBar = script.Parent
     local MainFrame = TopBar.Parent.Parent
     
-    local dragging = false
-    local dragInput, dragStart, startPos
+    local dragToggle = nil
+    local dragSpeed = 0.05
+    local dragStart = nil
+    local startPos = nil
+    
+    local function updateInput(input)
+        local delta = input.Position - dragStart
+        local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        TweenService:Create(MainFrame, TweenInfo.new(dragSpeed), {Position = position}):Play()
+    end
     
     TopBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then 
+            dragToggle = true
             dragStart = input.Position
             startPos = MainFrame.Position
-    
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+                    dragToggle = false
                 end
             end)
         end
     end)
     
-    TopBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    
     UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            MainFrame.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if dragToggle then
+                updateInput(input)
+            end
         end
     end)
 end
