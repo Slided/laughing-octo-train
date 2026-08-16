@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayboiCarti.lol | @areyouanxious</title>
+    
+    <!-- General & Twitter SEO Tags -->
+    <meta name="description" content="@areyouanxious on discord">
+    <link rel="canonical" href="http://playboicarti.lol">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="@areyouanxious on discord">
+    <meta name="twitter:title" content="PlayboiCarti.lol">
+    <meta name="twitter:image" content="https://playboicarti.lol">
+    
+    <!-- Discord Core Box Customization -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="PlayboiCarti.lol">
+    <meta property="og:url" content="https://playboicarti.lol">
+    <meta property="og:title" content="PlayboiCarti.lol">
+    <meta property="og:description" content="@areyouanxious on discord">
+    <meta name="theme-color" content="#800000" /> <!-- Change this hex code to change your embed border color -->
+
+    <!-- Video Integration Layout Tags -->
+    <meta property="og:type" content="video.other" />
+    <!-- REPLACE WITH YOUR DIRECT MP4 LINK -->
+    <meta property="og:video" content="https://playboicarti.lol/storage/carti.mp4" />
+    <meta property="og:video:secure_url" content="https://playboicarti.lol/storage/carti.mp4" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1280" />
+    <meta property="og:video:height" content="720" />
+
+    <!-- Static fallback frame or poster image before video loads -->
+    <meta property="og:image" content="https://playboicarti.lol">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="720">
+</head>
